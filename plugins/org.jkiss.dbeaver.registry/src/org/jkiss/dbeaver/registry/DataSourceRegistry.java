@@ -702,27 +702,24 @@ public class DataSourceRegistry implements DBPDataSourceRegistry, DataSourcePers
     }
 
     @Override
-    public boolean loadDataSources(
+    public void loadDataSources(
         @NotNull List<DBPDataSourceConfigurationStorage> storages,
         @NotNull DataSourceConfigurationManager manager,
         boolean refresh,
         boolean purgeUntouched
     ) {
-        // need this to show is the data source was updated
-        boolean configChanged = false;
         if (!project.isOpen() || project.isInMemory()) {
-            return false;
+            return;
         }
         // Clear filters before reload
         savedFilters.clear();
 
         // Parse datasources
         ParseResults parseResults = new ParseResults();
+
         // Modern way - search json configs in metadata folder
         for (DBPDataSourceConfigurationStorage cfgStorage : storages) {
-            if (loadDataSources(cfgStorage, manager, false, parseResults)) {
-                configChanged = true;
-            }
+            loadDataSources(cfgStorage, manager, false, parseResults);
         }
 
         // Reflect changes
@@ -767,16 +764,14 @@ public class DataSourceRegistry implements DBPDataSourceRegistry, DataSourcePers
                 }
             }
         }
-        return configChanged;
     }
 
-    private boolean loadDataSources(
+    private void loadDataSources(
         @NotNull DBPDataSourceConfigurationStorage storage,
         @NotNull DataSourceConfigurationManager manager,
         boolean refresh,
         @NotNull ParseResults parseResults
     ) {
-        boolean configChanged = false;
         try {
             DataSourceSerializer serializer;
             if (storage instanceof DataSourceFileStorage && ((DataSourceFileStorage) storage).isLegacy()) {
@@ -784,14 +779,13 @@ public class DataSourceRegistry implements DBPDataSourceRegistry, DataSourcePers
             } else {
                 serializer = new DataSourceSerializerModern(this);
             }
-            configChanged = serializer.parseDataSources(storage, manager, parseResults, refresh);
+            serializer.parseDataSources(storage, manager, parseResults, refresh);
             updateProjectNature();
             lastError = null;
         } catch (Exception ex) {
             lastError = ex;
             log.error("Error loading datasource config from " + storage.getStorageId(), ex);
         }
-        return configChanged;
     }
 
     @Override

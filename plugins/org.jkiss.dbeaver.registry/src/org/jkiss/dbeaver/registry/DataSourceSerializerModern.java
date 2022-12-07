@@ -351,13 +351,12 @@ class DataSourceSerializerModern implements DataSourceSerializer
     }
 
     @Override
-    public boolean parseDataSources(
+    public void parseDataSources(
         @NotNull DBPDataSourceConfigurationStorage configurationStorage,
         @NotNull DataSourceConfigurationManager configurationManager,
         @NotNull DataSourceRegistry.ParseResults parseResults,
         boolean refresh
     ) throws DBException, IOException {
-        var connectionConfigurationChanged = false;
         if (!configurationManager.isSecure()) {
             // Read secured creds file
             InputStream secureCredsData = configurationManager.readConfiguration(
@@ -521,7 +520,6 @@ class DataSourceSerializerModern implements DataSourceSerializer
 
                 DataSourceDescriptor dataSource = registry.getDataSource(id);
                 boolean newDataSource = (dataSource == null);
-                DBPConnectionConfiguration oldConnectionConfiguration = null;
                 if (newDataSource) {
                     DBPDataSourceOrigin origin;
                     Map<String, Object> originProperties = JSONUtils.deserializeProperties(conObject, TAG_ORIGIN);
@@ -544,7 +542,6 @@ class DataSourceSerializerModern implements DataSourceSerializer
                         driver,
                         new DBPConnectionConfiguration());
                 } else {
-                    oldConnectionConfiguration = new DBPConnectionConfiguration(dataSource.getConnectionConfiguration());
                     // Clean settings - they have to be loaded later by parser
                     dataSource.getConnectionConfiguration().setProperties(Collections.emptyMap());
                     dataSource.getConnectionConfiguration().setHandlers(Collections.emptyList());
@@ -707,12 +704,8 @@ class DataSourceSerializerModern implements DataSourceSerializer
                 // Add to the list
                 if (newDataSource) {
                     parseResults.addedDataSources.add(dataSource);
-                    connectionConfigurationChanged = true;
                 } else {
                     parseResults.updatedDataSources.add(dataSource);
-                    if (!dataSource.getConnectionConfiguration().equals(oldConnectionConfiguration)) {
-                        connectionConfigurationChanged = true;
-                    }
                 }
             }
 
@@ -722,7 +715,6 @@ class DataSourceSerializerModern implements DataSourceSerializer
                 registry.addSavedFilter(filter);
             }
         }
-        return connectionConfigurationChanged;
 
     }
 
