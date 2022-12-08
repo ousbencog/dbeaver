@@ -11,7 +11,7 @@
     <properties>
         <dbeaver-version>22.3.0</dbeaver-version>
         <dbeaver-product>DBeaver</dbeaver-product>
-        <tycho-version>3.0.0</tycho-version>
+        <tycho-version>3.0.1</tycho-version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format>
 
