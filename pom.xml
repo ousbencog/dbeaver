@@ -11,7 +11,7 @@
     <properties>
         <dbeaver-version>22.3.0</dbeaver-version>
         <dbeaver-product>DBeaver</dbeaver-product>
-        <tycho-version>3.0.1</tycho-version>
+        <tycho-version>3.0.1-SNAPSHOT</tycho-version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format>
 
@@ -21,6 +21,13 @@
         <key.storage.path>/etc/</key.storage.path>
         <tsa/>
     </properties>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>tycho-snapshots</id>
+            <url>https://repo.eclipse.org/content/repositories/tycho-snapshots/</url>
+        </pluginRepository>
+    </pluginRepositories>
 
     <modules>
         <module>bundles</module>
